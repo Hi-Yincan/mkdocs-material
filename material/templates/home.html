@@ -1,0 +1,33 @@
+{#-
+  AI-PM 首页 hero 模板
+  - 由 docs/index.md 的 frontmatter `template: home.html` 触发(MkDocs 原生机制)
+  - 覆写 `content` block,输出 hero 区(logo / 品牌 / CTA / 搜索引导),
+    之下渲染 `{{ page.content }}`(w3 的 .pm-card-grid 栏目卡片网格)
+  - 样式全部由 docs/_static/css/extra.css(w1)提供,本模板只输出结构与类名
+-#}
+{% extends "base.html" %}
+{% block content %}
+  <section class="pm-hero">
+    <div class="pm-hero__logo" aria-hidden="true">✦</div>
+    <div class="pm-hero__brand">
+      <h1 class="site-name">{{ config.site_name }}</h1>
+      <p class="tagline">{{ config.site_description }}</p>
+    </div>
+    <div class="pm-hero__cta">
+      <a class="pm-btn pm-btn--primary" href="#pm-home-body">开始学习</a>
+      <a class="pm-btn pm-btn--ghost" href="intro/about/">关于项目</a>
+    </div>
+    <div class="pm-hero__search">
+      <button
+        class="pm-btn pm-btn--search"
+        type="button"
+        onclick="var t=document.getElementById('__search');if(t&&!t.checked)t.click();document.querySelector('.md-search__input')?.focus()"
+      >搜索整个知识库</button>
+    </div>
+  </section>
+  {% if page.content %}
+    <div class="pm-home-body">
+      {{ page.content }}
+    </div>
+  {% endif %}
+{% endblock %}
