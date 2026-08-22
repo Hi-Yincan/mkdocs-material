@@ -7,11 +7,6 @@
   <head>
     {% block site_meta %}
       <meta charset="utf-8">
-      <meta http-equiv="x-dns-prefetch-control" content="on">
-      <link rel="dns-prefetch" href="//oi-wiki.org">
-      <link rel="dns-prefetch" href="//search.oi-wiki.org">
-      <link rel="dns-prefetch" href="//api.github.com">
-      <link rel="dns-prefetch" href="//www.google-analytics.com">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       {% if page.meta and page.meta.description %}
         <meta name="description" content="{{ page.meta.description }}">
@@ -243,14 +238,14 @@
             "search.result.term.missing": lang.t("search.result.term.missing"),
             "select.version": lang.t("select.version")
           },
-          "search": "assets/javascripts/workers/search.931a43a5.min.js" | url,
+          "search": "assets/javascripts/workers/search.d50fe291.min.js" | url,
           "tags": _.tags or none,
           "version": _.version or none
         } | tojson -}}
       </script>
     {% endblock %}
     {% block scripts %}
-      <script src="{{ 'assets/javascripts/bundle.73202423.min.js' | url }}"></script>
+      <script src="{{ 'assets/javascripts/bundle.56ea9cef.min.js' | url }}"></script>
       {% for script in config.extra_javascript %}
         {{ script | script_tag }}
       {% endfor %}

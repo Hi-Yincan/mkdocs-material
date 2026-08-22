@@ -86,9 +86,7 @@ function renderSearchDocument(
         {parent > 0 && <h1>{document.title}</h1>}
         {parent <= 0 && <h2>{document.title}</h2>}
         {teaser > 0 && document.text.length > 0 &&
-          <p class="md-search-result__teaser">
-            {document.text}
-          </p>
+          document.text
         }
         {document.tags && (
           <nav class="md-tags">

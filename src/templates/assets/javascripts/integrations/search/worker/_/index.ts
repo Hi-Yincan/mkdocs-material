@@ -29,6 +29,7 @@ import {
   switchMap
 } from "rxjs"
 
+import { feature } from "~/_"
 import { watchToggle, watchWorker } from "~/browser"
 
 import { SearchIndex } from "../../config"
@@ -78,9 +79,15 @@ export function setupSearchWorker(
       first(active => active),
       switchMap(() => index$)
     )
-      .subscribe(() => worker$.next({
+      .subscribe(({ config, docs }) => worker$.next({
         type: SearchMessageType.SETUP,
-        data: ((window as any).__oiWikiSearchEndpoint || "https://search.oi-wiki.org:8443/") as any
+        data: {
+          config,
+          docs,
+          options: {
+            suggest: feature("search.suggest")
+          }
+        }
       }))
 
   /* Return search worker */

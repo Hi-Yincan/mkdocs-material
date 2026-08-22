@@ -20,9 +20,13 @@
  * IN THE SOFTWARE.
  */
 
-import type { SearchResult, SearchItem } from "../../_";
+import lunr from "lunr"
+
+import { getElement } from "~/browser/element/_"
 import "~/polyfills"
 
+import { Search } from "../../_"
+import { SearchConfig } from "../../config"
 import {
   SearchMessage,
   SearchMessageType
@@ -54,42 +58,76 @@ declare global {
  * Data
  * ------------------------------------------------------------------------- */
 
-let searchEndpoint: string;
+/**
+ * Search index
+ */
+let index: Search
 
 /* ----------------------------------------------------------------------------
  * Helper functions
  * ------------------------------------------------------------------------- */
 
-async function handleSearch(keyword: string): Promise<SearchResult> {
-  keyword = keyword.trim();
-  if (!keyword) return { items: [] };
+/**
+ * Fetch (= import) multi-language support through `lunr-languages`
+ *
+ * This function automatically imports the stemmers necessary to process the
+ * languages which are defined as part of the search configuration.
+ *
+ * If the worker runs inside of an `iframe` (when using `iframe-worker` as
+ * a shim), the base URL for the stemmers to be loaded must be determined by
+ * searching for the first `script` element with a `src` attribute, which will
+ * contain the contents of this script.
+ *
+ * @param config - Search configuration
+ *
+ * @returns Promise resolving with no result
+ */
+async function setupSearchLanguages(
+  config: SearchConfig
+): Promise<void> {
+  let base = "../lunr"
 
-  interface OiWikiSearchServerResponseBody {
-    url: string;
-    title: string;
-    highlight: string[];
+  /* Detect `iframe-worker` and fix base URL */
+  if (typeof parent !== "undefined" && "IFrameWorker" in parent) {
+    const worker = getElement<HTMLScriptElement>("script[src]")
+    const [path] = worker.src.split("/worker")
+
+    /* Prefix base with path */
+    base = base.replace("..", path)
   }
 
-  const response = await fetch(
-    `${searchEndpoint}?s=${keyword}`,
-    {
-      credentials: "same-origin"
-    }
-  );
-  const responseBody: OiWikiSearchServerResponseBody[] = await response.json();
+  /* Add scripts for languages */
+  const scripts = []
+  for (const lang of config.lang) {
+    switch (lang) {
 
-  let score = 1e6;
-  return {
-    items: responseBody.map<SearchItem[]>(item =>
-      (item.highlight || [""]).map(match => ({
-        title: item.title,
-        location: item.url.startsWith("/") ? item.url.slice(1) : item.url,
-        terms: { [keyword]: true },
-        text: match.split("<em>").join("<mark>").split("</em>").join("</mark>"),
-        score: --score
-      }))
+      /* Add segmenter for Japanese */
+      case "ja":
+        scripts.push(`${base}/tinyseg.js`)
+        break
+
+      /* Add segmenter for Hindi and Thai */
+      case "hi":
+      case "th":
+        scripts.push(`${base}/wordcut.js`)
+        break
+    }
+
+    /* Add language support */
+    if (lang !== "en")
+      scripts.push(`${base}/min/lunr.${lang}.min.js`)
+  }
+
+  /* Add multi-language support */
+  if (config.lang.length > 1)
+    scripts.push(`${base}/min/lunr.multi.min.js`)
+
+  /* Load scripts synchronously */
+  if (scripts.length)
+    await importScripts(
+      `${base}/min/lunr.stemmer.support.min.js`,
+      ...scripts
     )
-  };
 }
 
 /* ----------------------------------------------------------------------------
@@ -110,16 +148,29 @@ export async function handler(
 
     /* Search setup message */
     case SearchMessageType.SETUP:
-      searchEndpoint = message.data as any as string;
+      await setupSearchLanguages(message.data.config)
+      index = new Search(message.data)
       return {
         type: SearchMessageType.READY
       }
 
     /* Search query message */
     case SearchMessageType.QUERY:
-      return {
-        type: SearchMessageType.RESULT,
-        data: await handleSearch(message.data)
+      const query = message.data
+      try {
+        return {
+          type: SearchMessageType.RESULT,
+          data: index.search(query)
+        }
+
+      /* Return empty result in case of error */
+      } catch (err) {
+        console.warn(`Invalid query: ${query} – see https://bit.ly/2s3ChXG`)
+        console.warn(err)
+        return {
+          type: SearchMessageType.RESULT,
+          data: { items: [] }
+        }
       }
 
     /* All other messages */
@@ -131,6 +182,12 @@ export async function handler(
 /* ----------------------------------------------------------------------------
  * Worker
  * ------------------------------------------------------------------------- */
+
+/* Expose Lunr.js in global scope, or stemmers won't work */
+self.lunr = lunr
+
+/* Monkey-patch Lunr.js to mitigate https://t.ly/68TLq */
+lunr.utils.warn = console.warn
 
 /* Handle messages */
 addEventListener("message", async ev => {

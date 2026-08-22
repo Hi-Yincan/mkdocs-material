@@ -138,7 +138,7 @@ const print$    = watchPrint()
 /* Retrieve search index, if search is enabled */
 const config = configuration()
 const index$ = document.forms.namedItem("search")
-  ? Promise.resolve({})
+  ? fetchSearchIndex()
   : NEVER
 
 /* Set up Clipboard.js integration */
