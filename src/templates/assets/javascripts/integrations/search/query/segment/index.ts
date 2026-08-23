@@ -47,7 +47,7 @@ export function segment(
   /* Segment search query */
   const wordcuts = new Uint16Array(query.length)
   for (let i = 0; i < query.length; i++)
-    for (let j = i + 1; j < query.length; j++) {
+    for (let j = i + 1; j <= query.length; j++) {
       const value = query.slice(i, j)
       if (value in index)
         wordcuts[i] = j - i
