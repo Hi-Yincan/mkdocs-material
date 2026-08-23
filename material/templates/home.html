@@ -1,14 +1,19 @@
 {#-
   AI-PM 首页 hero 模板
   - 由 docs/index.md 的 frontmatter `template: home.html` 触发(MkDocs 原生机制)
-  - 覆写 `content` block,输出 hero 区(logo / 品牌 / CTA / 搜索引导),
+  - 覆写 `content` block,输出 hero 区(眉题 / 等势线 banner / 品牌 / CTA / 搜索引导),
     之下渲染 `{{ page.content }}`(w3 的 .pm-card-grid 栏目卡片网格)
   - 样式全部由 docs/_static/css/extra.css(w1)提供,本模板只输出结构与类名
 -#}
 {% extends "base.html" %}
 {% block content %}
   <section class="pm-hero">
-    <div class="pm-hero__logo" aria-hidden="true">✦</div>
+    <p class="pm-hero__eyebrow" aria-hidden="true">AI Product Manager Knowledge Base</p>
+    <div class="pm-banner" role="img" aria-label="AI-PM 等势线地形——WebGL 实时渲染的标量场,AIPM 四个字母如盆地般被等势线与轮廓线环绕显现,指针移入即扰动场">
+      <canvas class="pm-banner__canvas pm-banner__canvas--gl" aria-hidden="true"></canvas>
+      <canvas class="pm-banner__canvas pm-banner__canvas--ink" aria-hidden="true"></canvas>
+      <p class="pm-banner__caption" aria-hidden="true">AIPM · EQUIPOTENTIAL FIELD · WEBGL</p>
+    </div>
     <div class="pm-hero__brand">
       <h1 class="site-name">{{ config.site_name }}</h1>
       <p class="tagline">{{ config.site_description }}</p>
