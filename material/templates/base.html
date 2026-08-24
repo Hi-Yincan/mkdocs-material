@@ -52,6 +52,7 @@
         <meta property="og:description" content="{{ config.site_description }}">
       {% endif %}
       {% if config.theme.favicon %}
+        {# og:image 使用站点根路径 + favicon(站点部署于根路径,见 home.html 注释) #}
         <meta property="og:image" content="{{ config.site_url ~ config.theme.favicon }}">
       {% endif %}
       <meta name="twitter:card" content="summary">
@@ -62,7 +63,13 @@
         <meta name="twitter:description" content="{{ config.site_description }}">
       {% endif %}
       <script type="application/ld+json">
-        {{ { "@context": "https://schema.org", "@type": "WebSite", "name": config.site_name, "description": config.site_description, "url": config.site_url } | tojson }}
+        {{ {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": config.site_name,
+          "description": config.site_description,
+          "url": config.site_url
+        } | tojson }}
       </script>
     {% endblock %}
     {% block htmltitle %}
@@ -75,7 +82,7 @@
       {% endif %}
     {% endblock %}
     {% block styles %}
-      <link rel="stylesheet" href="{{ 'assets/stylesheets/main.bd3167ff.min.css' | url }}">
+      <link rel="stylesheet" href="{{ 'assets/stylesheets/main.1c213712.min.css' | url }}">
       {% if config.theme.palette %}
         {% set palette = config.theme.palette %}
         <link rel="stylesheet" href="{{ 'assets/stylesheets/palette.06af60db.min.css' | url }}">
@@ -269,14 +276,14 @@
             "search.result.term.missing": lang.t("search.result.term.missing"),
             "select.version": lang.t("select.version")
           },
-          "search": "assets/javascripts/workers/search.d50fe291.min.js" | url,
+          "search": "assets/javascripts/workers/search.0e86a555.min.js" | url,
           "tags": _.tags or none,
           "version": _.version or none
         } | tojson -}}
       </script>
     {% endblock %}
     {% block scripts %}
-      <script src="{{ 'assets/javascripts/bundle.56ea9cef.min.js' | url }}"></script>
+      <script src="{{ 'assets/javascripts/bundle.196e5199.min.js' | url }}"></script>
       {% for script in config.extra_javascript %}
         {{ script | script_tag }}
       {% endfor %}
