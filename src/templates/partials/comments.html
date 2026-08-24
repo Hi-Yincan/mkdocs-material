@@ -21,8 +21,6 @@
 -->
 
 <!-- Set from config but allow override -->
-{% set disqus = config.extra.disqus %} {% if page and page.meta and page.meta.disqus is string %} {% set disqus = page.meta.disqus
-  %} {% endif %}
 {% set copyright = config.extra.copyright %} {% if page and page.meta and page.meta.copyright is string %} {% set copyright = page.meta.copyright
   %} {% endif %}
 {% set authors = 'AI-PM Wiki Team' %} {% if page and page.meta and page.meta.author is string %} {% set authors = page.meta.author
