@@ -33,12 +33,43 @@
       {% endif %}
       <link rel="icon" href="{{ config.theme.favicon | url }}">
       <meta name="generator" content="mkdocs-{{ mkdocs_version }}, mkdocs-material-9.6.15">
+      {% if page.meta and page.meta.title %}
+        {% set og_title = page.meta.title %}
+      {% elif page.title and not page.is_homepage %}
+        {% set og_title = page.title | striptags %}
+      {% else %}
+        {% set og_title = config.site_name %}
+      {% endif %}
+      <meta property="og:type" content="website">
+      <meta property="og:title" content="{{ og_title }}">
+      <meta property="og:site_name" content="{{ config.site_name }}">
+      {% if page.canonical_url %}
+        <meta property="og:url" content="{{ page.canonical_url }}">
+      {% endif %}
+      {% if page.meta and page.meta.description %}
+        <meta property="og:description" content="{{ page.meta.description }}">
+      {% elif config.site_description %}
+        <meta property="og:description" content="{{ config.site_description }}">
+      {% endif %}
+      {% if config.theme.favicon %}
+        <meta property="og:image" content="{{ config.site_url ~ config.theme.favicon }}">
+      {% endif %}
+      <meta name="twitter:card" content="summary">
+      <meta name="twitter:title" content="{{ og_title }}">
+      {% if page.meta and page.meta.description %}
+        <meta name="twitter:description" content="{{ page.meta.description }}">
+      {% elif config.site_description %}
+        <meta name="twitter:description" content="{{ config.site_description }}">
+      {% endif %}
+      <script type="application/ld+json">
+        {{ { "@context": "https://schema.org", "@type": "WebSite", "name": config.site_name, "description": config.site_description, "url": config.site_url } | tojson }}
+      </script>
     {% endblock %}
     {% block htmltitle %}
       {% if page.meta and page.meta.title %}
-        <title>{{ page.meta.title }} - {{ config.site_name }}</title>
+        <title>{% if page.meta.title != config.site_name %}{{ page.meta.title }} - {% endif %}{{ config.site_name }}</title>
       {% elif page.title and not page.is_homepage %}
-        <title>{{ page.title | striptags }} - {{ config.site_name }}</title>
+        <title>{% if page.title | striptags != config.site_name %}{{ page.title | striptags }} - {% endif %}{{ config.site_name }}</title>
       {% else %}
         <title>{{ config.site_name }}</title>
       {% endif %}
