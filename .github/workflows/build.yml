@@ -19,14 +19,16 @@
 # IN THE SOFTWARE.
 
 name: build
+# Fork 说明(AI-PM-Wiki/mkdocs-material):上游的「npm run build + git diff 复现性
+# 检查」(npm-build job)在本 fork 必然失败且有害:
+#   - npm run build 先 rimraf material 再重建,而 material/templates 是编译产物与
+#     手工维护文件(AI-PM 首页 home.html、定制 FA7 github-alt 图标等)的混合树,
+#     重建会当场删除/覆盖手工内容;
+#   - 产物可复现性要求本 fork 不成立(无 node_modules,且两树存在刻意差异)。
+# 故禁用 push/PR/release 自动触发,仅保留手动触发(workflow_dispatch)以便需要时
+# 人工重建验证。若未来上游合并改动本文件,注意保持此禁用语义。
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-  release:
-    types:
-      - published
+  workflow_dispatch:
 
 env:
   NODE_VERSION: 18.x

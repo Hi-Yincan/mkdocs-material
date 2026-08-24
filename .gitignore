@@ -68,4 +68,6 @@ tmp
 *~
 
 # Vendor resources
-/material/assets/vendor
+# install-theme-vendor.sh(主仓库 scripts/pre-build/)写入
+# mkdocs-material/material/templates/assets/vendor,故模式需匹配该实际路径
+/material/templates/assets/vendor/
