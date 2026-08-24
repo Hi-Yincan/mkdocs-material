@@ -221,6 +221,17 @@ const assets$ = concat(
       transform: async data => minsvg(data)
     })),
 
+  /* Copy Lunr language files (search worker loads them via `../lunr`;
+     not tracked in src — see tools/build/README notes) */
+  copyAll("min/*.min.js", {
+    from: "node_modules/lunr-languages",
+    to: `${base}/templates/assets/javascripts/lunr`
+  }),
+  copyAll("{tinyseg,wordcut}.js", {
+    from: "node_modules/lunr-languages",
+    to: `${base}/templates/assets/javascripts/lunr`
+  }),
+
   /* Copy images and configurations */
   ...["**/*.{jpg,png,svg,yml}"]
     .map(pattern => copyAll(pattern, {
