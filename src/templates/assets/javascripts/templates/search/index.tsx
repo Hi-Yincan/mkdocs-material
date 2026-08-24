@@ -44,6 +44,35 @@ const enum Flag {
  * ------------------------------------------------------------------------- */
 
 /**
+ * Render a search result teaser
+ *
+ * Extracts the first sentence block that contains a highlighted match
+ * from the document's text (hooks/on_env.py chunks text into `<p>` blocks
+ * and the worker highlights matched terms with `<mark>`), so that the
+ * search result shows the sentence matching the query — not a large
+ * excerpt of the article.
+ *
+ * @param document - Search document
+ *
+ * @returns Teaser HTML
+ */
+function renderTeaser(document: SearchItem): string {
+  const text = document.text
+
+  /* Extract sentence blocks */
+  const blocks = text.match(/<p>[\s\S]*?<\/p>/g) ?? []
+
+  /* Prefer the first block containing a highlighted match */
+  const hit = blocks.find(block => block.includes("<mark>"))
+  const picked = typeof hit !== "undefined"
+    ? hit
+    : blocks[0] ?? text
+
+  /* Strip block tags, keep inline markup (e.g. <mark>) */
+  return picked.replace(/<\/?p>/g, "").trim()
+}
+
+/**
  * Render a search document
  *
  * @param document - Search document
@@ -86,7 +115,9 @@ function renderSearchDocument(
         {parent > 0 && <h1>{document.title}</h1>}
         {parent <= 0 && <h2>{document.title}</h2>}
         {teaser > 0 && document.text.length > 0 &&
-          document.text
+          <p class="md-search-result__teaser">
+            {renderTeaser(document)}
+          </p>
         }
         {document.tags && (
           <nav class="md-tags">
