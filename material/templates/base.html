@@ -90,7 +90,7 @@
       <meta name="baidu-site-verification" content="{{ config.extra.seo_verification.baidu }}">
     {% endif %}
     {% block htmltitle %}
-      {% if page.is_homepage and config.extra.seo_home_title %}
+      {% if page.file.url in ('.', './', 'index.html') and config.extra.seo_home_title %}
         <title>{{ config.extra.seo_home_title }}</title>
       {% elif page.meta and page.meta.title %}
         <title>{% if page.meta.title != config.site_name %}{{ page.meta.title }} - {% endif %}{{ config.site_name }}</title>
